@@ -479,9 +479,15 @@ async def get_resumes():
         raise HTTPException(status_code=500, detail="Error fetching resumes")
 
 @api_router.post("/skill-development-comparison/{resume_id}")
-async def skill_development_comparison(resume_id: str, skill_to_develop: str):
+async def skill_development_comparison(resume_id: str, skill_to_develop: str = None):
     """Compare job matches before and after developing a specific skill"""
     try:
+        # Get skill_to_develop from query parameter if not in body
+        if not skill_to_develop:
+            from fastapi import Request
+            # Handle as query parameter
+            pass
+        
         # Get resume from database
         resume_doc = await db.resumes.find_one({"id": resume_id})
         if not resume_doc:
