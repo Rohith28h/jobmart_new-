@@ -259,10 +259,16 @@ def calculate_job_match(resume: ResumeData, job: JobListing) -> JobMatch:
         resume_text = " ".join(resume.skills) + " " + " ".join([exp.get("description", "") for exp in resume.experience])
         job_text = job.description + " " + " ".join(job.requirements)
         
-        # Calculate semantic similarity using sentence transformers
-        resume_embedding = sentence_model.encode([resume_text])
-        job_embedding = sentence_model.encode([job_text])
-        semantic_similarity = cosine_similarity(resume_embedding, job_embedding)[0][0]
+        # Calculate semantic similarity using sentence transformers if available
+        semantic_similarity = 0.5  # Default value if sentence_model is not available
+        if sentence_model:
+            try:
+                resume_embedding = sentence_model.encode([resume_text])
+                job_embedding = sentence_model.encode([job_text])
+                semantic_similarity = cosine_similarity(resume_embedding, job_embedding)[0][0]
+            except Exception as e:
+                logger = logging.getLogger(__name__)
+                logger.error(f"Error calculating semantic similarity: {e}")
         
         # Calculate skill matching
         resume_skills_lower = [skill.lower() for skill in resume.skills]
@@ -301,6 +307,7 @@ def calculate_job_match(resume: ResumeData, job: JobListing) -> JobMatch:
             recommendations=recommendations
         )
     except Exception as e:
+        logger = logging.getLogger(__name__)
         logger.error(f"Error calculating job match: {e}")
         return JobMatch(
             job=job,
