@@ -35,7 +35,7 @@ const SkillDevelopmentComparison = ({ resumeId, availableSkills }) => {
     setError(null);
 
     try {
-      const response = await axios.post(`${API}/skill-development-comparison/${resumeId}`, null, {
+      const response = await axios.get(`${API}/skill-development-comparison/${resumeId}`, {
         params: { skill_to_develop: skill }
       });
       setComparisonData(response.data);
