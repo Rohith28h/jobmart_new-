@@ -43,15 +43,26 @@ try:
     try:
         nlp = spacy.load("en_core_web_sm")
     except OSError:
-        os.system("python -m spacy download en_core_web_sm")
-        nlp = spacy.load("en_core_web_sm")
+        try:
+            os.system("python -m spacy download en_core_web_sm")
+            nlp = spacy.load("en_core_web_sm")
+        except Exception as e:
+            logger = logging.getLogger(__name__)
+            logger.error(f"Error downloading spaCy model: {e}")
+            nlp = None
     
     # Initialize sentence transformer for semantic similarity
-    sentence_model = SentenceTransformer('all-MiniLM-L6-v2')
+    try:
+        sentence_model = SentenceTransformer('all-MiniLM-L6-v2')
+    except Exception as e:
+        logger = logging.getLogger(__name__)
+        logger.error(f"Error loading sentence transformer: {e}")
+        sentence_model = None
     
     logger = logging.getLogger(__name__)
     logger.info("AI models loaded successfully")
 except Exception as e:
+    logger = logging.getLogger(__name__)
     logger.error(f"Error loading AI models: {e}")
     nlp = None
     sentence_model = None
