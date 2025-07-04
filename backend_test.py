@@ -201,6 +201,90 @@ class JobMateAPITester(unittest.TestCase):
             self.assertIn(self.resume_id, resume_ids)
             print(f"✅ Verified our uploaded resume (ID: {self.resume_id}) is in the database")
 
+    def test_07_skill_development_comparison(self):
+        """Test skill development comparison endpoint"""
+        if not self.resume_id:
+            self.skipTest("Resume ID not available, skipping skill development comparison test")
+        
+        print(f"\n🔍 Testing skill development comparison endpoint with resume ID: {self.resume_id}...")
+        
+        # Test with different skills
+        test_skills = ["Docker", "React", "Python"]
+        
+        for skill in test_skills:
+            print(f"   Testing with skill: {skill}")
+            response = requests.get(f"{API_URL}/skill-development-comparison/{self.resume_id}?skill_to_develop={skill}")
+            
+            self.assertEqual(response.status_code, 200)
+            data = response.json()
+            
+            # Verify response structure
+            required_fields = ['skill_developed', 'original_matches', 'modified_matches', 
+                              'original_resume_skills', 'modified_resume_skills']
+            for field in required_fields:
+                self.assertIn(field, data)
+            
+            # Verify the skill was added
+            self.assertEqual(data['skill_developed'], skill)
+            self.assertIn(skill, data['modified_resume_skills'])
+            
+            # Verify matches structure
+            self.assertIsInstance(data['original_matches'], list)
+            self.assertIsInstance(data['modified_matches'], list)
+            
+            # Verify there are matches
+            self.assertTrue(len(data['original_matches']) > 0)
+            self.assertTrue(len(data['modified_matches']) > 0)
+            
+            # Compare match scores (at least one job should have a different score)
+            score_differences = []
+            for i in range(len(data['original_matches'])):
+                original_score = data['original_matches'][i]['match_score']
+                modified_score = data['modified_matches'][i]['match_score']
+                difference = modified_score - original_score
+                score_differences.append(difference)
+                
+                print(f"     Job: {data['original_matches'][i]['job']['title']}")
+                print(f"     Original score: {original_score:.2f}%, Modified score: {modified_score:.2f}%, Difference: {difference:.2f}%")
+            
+            # At least one job should have a different score
+            self.assertTrue(any(diff != 0 for diff in score_differences))
+            print(f"   ✅ Skill development comparison test passed for skill: {skill}")
+    
+    def test_08_error_scenarios(self):
+        """Test error scenarios"""
+        print("\n🔍 Testing error scenarios...")
+        
+        # Test invalid resume ID
+        print("   Testing invalid resume ID...")
+        invalid_id = "invalid-uuid-12345"
+        response = requests.post(f"{API_URL}/match-jobs/{invalid_id}")
+        self.assertEqual(response.status_code, 404)
+        
+        # Test missing skill parameter
+        if self.resume_id:
+            print("   Testing missing skill parameter...")
+            response = requests.get(f"{API_URL}/skill-development-comparison/{self.resume_id}")
+            self.assertNotEqual(response.status_code, 200)
+        
+        # Test invalid file type for upload
+        print("   Testing invalid file type...")
+        with tempfile.NamedTemporaryFile(suffix='.txt', delete=False) as temp_file:
+            temp_txt_path = temp_file.name
+            temp_file.write(b"This is a text file, not a resume")
+        
+        try:
+            with open(temp_txt_path, 'rb') as txt_file:
+                files = {'file': ('resume.txt', txt_file, 'text/plain')}
+                response = requests.post(f"{API_URL}/upload-resume", files=files)
+            
+            self.assertEqual(response.status_code, 400)
+        finally:
+            if os.path.exists(temp_txt_path):
+                os.unlink(temp_txt_path)
+        
+        print("✅ Error scenarios test passed")
+
 if __name__ == "__main__":
     # Run the tests
     print("🚀 Starting JobMate API Tests")
@@ -214,6 +298,8 @@ if __name__ == "__main__":
     test_suite.addTest(JobMateAPITester('test_04_match_jobs'))
     test_suite.addTest(JobMateAPITester('test_05_career_suggestions'))
     test_suite.addTest(JobMateAPITester('test_06_get_resumes'))
+    test_suite.addTest(JobMateAPITester('test_07_skill_development_comparison'))
+    test_suite.addTest(JobMateAPITester('test_08_error_scenarios'))
     
     # Run the tests
     runner = unittest.TextTestRunner(verbosity=2)
