@@ -420,6 +420,9 @@ async def match_jobs(resume_id: str):
         
         return {"matches": matches}
     
+    except HTTPException:
+        # Re-raise HTTP exceptions
+        raise
     except Exception as e:
         logger.error(f"Error matching jobs: {e}")
         raise HTTPException(status_code=500, detail="Error calculating job matches")
