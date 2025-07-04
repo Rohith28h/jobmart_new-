@@ -389,6 +389,9 @@ async def upload_resume(file: UploadFile = File(...)):
         
         return {"message": "Resume uploaded and parsed successfully", "resume": resume_data}
     
+    except HTTPException:
+        # Re-raise HTTP exceptions
+        raise
     except Exception as e:
         logger.error(f"Error uploading resume: {e}")
         raise HTTPException(status_code=500, detail="Error processing resume")
