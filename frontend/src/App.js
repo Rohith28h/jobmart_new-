@@ -14,6 +14,15 @@ const JobMate = () => {
   const [loading, setLoading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
 
+  // Get all available skills for development from job matches
+  const getAvailableSkillsForDevelopment = () => {
+    const skills = new Set();
+    jobMatches.forEach(match => {
+      match.missing_skills.forEach(skill => skills.add(skill));
+    });
+    return Array.from(skills);
+  };
+
   // Upload resume function
   const handleResumeUpload = async (file) => {
     setLoading(true);
