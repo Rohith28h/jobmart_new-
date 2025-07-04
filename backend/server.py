@@ -536,6 +536,9 @@ async def skill_development_comparison(resume_id: str, skill_to_develop: str):
             "modified_resume_skills": modified_resume.skills
         }
     
+    except HTTPException:
+        # Re-raise HTTP exceptions
+        raise
     except Exception as e:
         logger.error(f"Error in skill development comparison: {e}")
         raise HTTPException(status_code=500, detail="Error calculating skill development comparison")
