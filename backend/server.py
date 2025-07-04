@@ -136,6 +136,10 @@ class CareerSuggestion(BaseModel):
 # Resume parsing functions
 def extract_text_from_pdf(file_content: bytes) -> str:
     """Extract text from PDF file"""
+    if not pdfplumber_available:
+        logger.warning("pdfplumber is not available. Cannot extract text from PDF.")
+        return "PDF text extraction not available. Please install pdfplumber."
+    
     try:
         with io.BytesIO(file_content) as pdf_file:
             with pdfplumber.open(pdf_file) as pdf:
@@ -149,6 +153,10 @@ def extract_text_from_pdf(file_content: bytes) -> str:
 
 def extract_text_from_docx(file_content: bytes) -> str:
     """Extract text from DOCX file"""
+    if not docx2txt_available:
+        logger.warning("docx2txt is not available. Cannot extract text from DOCX.")
+        return "DOCX text extraction not available. Please install docx2txt."
+    
     try:
         with io.BytesIO(file_content) as docx_file:
             text = docx2txt.process(docx_file)
