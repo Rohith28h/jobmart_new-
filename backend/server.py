@@ -478,6 +478,50 @@ async def get_resumes():
         logger.error(f"Error fetching resumes: {e}")
         raise HTTPException(status_code=500, detail="Error fetching resumes")
 
+@api_router.post("/skill-development-comparison/{resume_id}")
+async def skill_development_comparison(resume_id: str, skill_to_develop: str):
+    """Compare job matches before and after developing a specific skill"""
+    try:
+        # Get resume from database
+        resume_doc = await db.resumes.find_one({"id": resume_id})
+        if not resume_doc:
+            raise HTTPException(status_code=404, detail="Resume not found")
+        
+        original_resume = ResumeData(**resume_doc)
+        
+        # Create modified resume with the new skill
+        modified_resume = ResumeData(**resume_doc)
+        modified_resume.skills = original_resume.skills + [skill_to_develop]
+        
+        # Calculate matches for both scenarios
+        original_matches = []
+        modified_matches = []
+        
+        for job in sample_jobs:
+            # Original matches
+            original_match = calculate_job_match(original_resume, job)
+            original_matches.append(original_match)
+            
+            # Modified matches (with new skill)
+            modified_match = calculate_job_match(modified_resume, job)
+            modified_matches.append(modified_match)
+        
+        # Sort both by match score (highest first)
+        original_matches.sort(key=lambda x: x.match_score, reverse=True)
+        modified_matches.sort(key=lambda x: x.match_score, reverse=True)
+        
+        return {
+            "skill_developed": skill_to_develop,
+            "original_matches": original_matches,
+            "modified_matches": modified_matches,
+            "original_resume_skills": original_resume.skills,
+            "modified_resume_skills": modified_resume.skills
+        }
+    
+    except Exception as e:
+        logger.error(f"Error in skill development comparison: {e}")
+        raise HTTPException(status_code=500, detail="Error calculating skill development comparison")
+
 # Include the router in the main app
 app.include_router(api_router)
 
