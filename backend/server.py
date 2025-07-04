@@ -176,12 +176,16 @@ def extract_skills(text: str) -> List[str]:
         if skill.lower() in text_lower:
             skills.add(skill)
     
-    # Use spaCy for additional entity extraction
+    # Use spaCy for additional entity extraction if available
     if nlp:
-        doc = nlp(text)
-        for ent in doc.ents:
-            if ent.label_ in ["ORG", "PRODUCT", "TECHNOLOGY"]:
-                skills.add(ent.text)
+        try:
+            doc = nlp(text)
+            for ent in doc.ents:
+                if ent.label_ in ["ORG", "PRODUCT", "TECHNOLOGY"]:
+                    skills.add(ent.text)
+        except Exception as e:
+            logger = logging.getLogger(__name__)
+            logger.error(f"Error extracting entities with spaCy: {e}")
     
     return list(skills)
 
