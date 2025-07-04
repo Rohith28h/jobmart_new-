@@ -8,7 +8,7 @@ import json
 import time
 
 # Get the backend URL from the frontend .env file
-BACKEND_URL = "https://17bab6ee-3401-4dfd-a291-994c1315fba1.preview.emergentagent.com"
+BACKEND_URL = "https://ae66fcae-90d2-4a51-ac81-0d082011bff8.preview.emergentagent.com"
 API_URL = f"{BACKEND_URL}/api"
 
 class JobMateAPITester(unittest.TestCase):
