@@ -59,34 +59,43 @@ app = FastAPI()
 api_router = APIRouter(prefix="/api")
 
 # Initialize AI models
-try:
-    # Load spaCy model (download if not available)
+nlp = None
+sentence_model = None
+
+# Configure logging
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+)
+logger = logging.getLogger(__name__)
+
+if spacy_available:
     try:
-        nlp = spacy.load("en_core_web_sm")
-    except OSError:
+        # Load spaCy model (download if not available)
         try:
-            os.system("python -m spacy download en_core_web_sm")
             nlp = spacy.load("en_core_web_sm")
-        except Exception as e:
-            logger = logging.getLogger(__name__)
-            logger.error(f"Error downloading spaCy model: {e}")
-            nlp = None
-    
-    # Initialize sentence transformer for semantic similarity
-    try:
-        sentence_model = SentenceTransformer('all-MiniLM-L6-v2')
+            logger.info("spaCy model loaded successfully")
+        except OSError:
+            try:
+                os.system("python -m spacy download en_core_web_sm")
+                nlp = spacy.load("en_core_web_sm")
+                logger.info("spaCy model downloaded and loaded successfully")
+            except Exception as e:
+                logger.error(f"Error downloading spaCy model: {e}")
     except Exception as e:
-        logger = logging.getLogger(__name__)
+        logger.error(f"Error loading spaCy: {e}")
+else:
+    logger.warning("spaCy is not available. Some NLP features will be limited.")
+
+if sentence_transformers_available:
+    try:
+        # Initialize sentence transformer for semantic similarity
+        sentence_model = SentenceTransformer('all-MiniLM-L6-v2')
+        logger.info("Sentence transformer model loaded successfully")
+    except Exception as e:
         logger.error(f"Error loading sentence transformer: {e}")
-        sentence_model = None
-    
-    logger = logging.getLogger(__name__)
-    logger.info("AI models loaded successfully")
-except Exception as e:
-    logger = logging.getLogger(__name__)
-    logger.error(f"Error loading AI models: {e}")
-    nlp = None
-    sentence_model = None
+else:
+    logger.warning("Sentence transformers are not available. Semantic similarity will use fallback methods.")
 
 # Define Models
 class ResumeData(BaseModel):
