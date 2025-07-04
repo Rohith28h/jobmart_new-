@@ -13,12 +13,33 @@ import tempfile
 import io
 
 # AI/NLP imports
-import spacy
-import pdfplumber
-import docx2txt
+try:
+    import spacy
+    spacy_available = True
+except ImportError:
+    spacy_available = False
+    
+try:
+    import pdfplumber
+    pdfplumber_available = True
+except ImportError:
+    pdfplumber_available = False
+    
+try:
+    import docx2txt
+    docx2txt_available = True
+except ImportError:
+    docx2txt_available = False
+    
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
-from sentence_transformers import SentenceTransformer
+
+try:
+    from sentence_transformers import SentenceTransformer
+    sentence_transformers_available = True
+except ImportError:
+    sentence_transformers_available = False
+    
 import numpy as np
 import re
 import json
