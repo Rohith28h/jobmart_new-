@@ -482,48 +482,9 @@ async def get_resumes():
 async def skill_development_comparison(resume_id: str, skill_to_develop: str = None):
     """Compare job matches before and after developing a specific skill"""
     try:
-        # Get skill_to_develop from query parameter if not in body
-        if not skill_to_develop:
-            from fastapi import Request
-            # Handle as query parameter
-            pass
-        
-        # Get resume from database
-        resume_doc = await db.resumes.find_one({"id": resume_id})
-        if not resume_doc:
-            raise HTTPException(status_code=404, detail="Resume not found")
-        
-        original_resume = ResumeData(**resume_doc)
-        
-        # Create modified resume with the new skill
-        modified_resume = ResumeData(**resume_doc)
-        modified_resume.skills = original_resume.skills + [skill_to_develop]
-        
-        # Calculate matches for both scenarios
-        original_matches = []
-        modified_matches = []
-        
-        for job in sample_jobs:
-            # Original matches
-            original_match = calculate_job_match(original_resume, job)
-            original_matches.append(original_match)
-            
-            # Modified matches (with new skill)
-            modified_match = calculate_job_match(modified_resume, job)
-            modified_matches.append(modified_match)
-        
-        # Sort both by match score (highest first)
-        original_matches.sort(key=lambda x: x.match_score, reverse=True)
-        modified_matches.sort(key=lambda x: x.match_score, reverse=True)
-        
-        return {
-            "skill_developed": skill_to_develop,
-            "original_matches": original_matches,
-            "modified_matches": modified_matches,
-            "original_resume_skills": original_resume.skills,
-            "modified_resume_skills": modified_resume.skills
-        }
-    
+        from fastapi import Query
+        # This should be handled as a query parameter
+        return {"message": "Please use GET endpoint with skill_to_develop query parameter"}
     except Exception as e:
         logger.error(f"Error in skill development comparison: {e}")
         raise HTTPException(status_code=500, detail="Error calculating skill development comparison")
