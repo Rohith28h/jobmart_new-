@@ -479,6 +479,9 @@ async def get_career_suggestions(resume_id: str):
         
         return {"suggestions": suggestions}
     
+    except HTTPException:
+        # Re-raise HTTP exceptions
+        raise
     except Exception as e:
         logger.error(f"Error generating career suggestions: {e}")
         raise HTTPException(status_code=500, detail="Error generating career suggestions")
