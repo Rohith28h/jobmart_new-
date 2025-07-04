@@ -398,6 +398,12 @@ const JobMate = () => {
                 <p className="text-gray-500">Loading career suggestions...</p>
               )}
             </div>
+
+            {/* Skill Development Comparison */}
+            <SkillDevelopmentComparison 
+              resumeId={resumeData.id}
+              availableSkills={getAvailableSkillsForDevelopment()}
+            />
           </div>
         )}
       </main>
