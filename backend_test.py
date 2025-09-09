@@ -16,7 +16,7 @@ class JobMateAPITester(unittest.TestCase):
     
     def setUp(self):
         """Setup for tests"""
-        self.resume_id = "e42be389-8c67-4110-8c22-e6bd84dc08d7"
+        self.resume_id = None  # Will be set after upload
         
         # Create a sample resume for testing
         self.sample_resume_content = """
