@@ -319,13 +319,37 @@ backend:
         -comment: "Re-tested error handling - working correctly. Returns proper HTTP status codes: 404 for invalid resume IDs, 400 for invalid file types, 422 for missing parameters."
 
 frontend:
+  - task: "About Page Implementation"
+    implemented: true
+    working: true
+    file: "/app/frontend/src/About.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        -working: true
+        -agent: "main"
+        -comment: "Successfully created comprehensive About page with company mission, features, how it works, and call-to-action sections. Added to navigation."
+
+  - task: "Line Chart Integration"
+    implemented: true
+    working: true
+    file: "/app/frontend/src/SkillDevelopmentComparison.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        -working: true
+        -agent: "main"
+        -comment: "Successfully added line chart to skill development comparison showing progression of match scores before and after skill learning. Includes interactive tooltips and proper styling."
+
   - task: "Frontend Testing"
     implemented: true
     working: "NA"
     file: "/app/frontend/src/App.js"
     stuck_count: 0
     priority: "medium"
-    needs_retesting: false
+    needs_retesting: true
     status_history:
         -working: "NA"
         -agent: "testing"
