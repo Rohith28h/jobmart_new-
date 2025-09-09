@@ -78,58 +78,43 @@ class CareerSuggestion(BaseModel):
 
 # Resume parsing functions
 def extract_text_from_pdf(file_content: bytes) -> str:
-    """Extract text from PDF file - simplified version"""
-    # In a real implementation, we would use pdfplumber
-    # For testing purposes, we'll just return a sample text
-    return """
-    John Doe
-    john.doe@example.com
-    (555) 123-4567
+    """Extract text from PDF file using pdfplumber"""
+    import pdfplumber
+    import io
     
-    SKILLS
-    Python, JavaScript, React, Machine Learning, SQL, Git
-    
-    EXPERIENCE
-    Software Engineer, TechCorp Inc.
-    2020-2023
-    Developed web applications using React and Node.js
-    Implemented machine learning models for data analysis
-    
-    Junior Developer, StartupXYZ
-    2018-2020
-    Built responsive websites using HTML, CSS, and JavaScript
-    
-    EDUCATION
-    University of Technology
-    Bachelor of Science in Computer Science, 2018
-    """
+    try:
+        with pdfplumber.open(io.BytesIO(file_content)) as pdf:
+            text = ""
+            for page in pdf.pages:
+                page_text = page.extract_text()
+                if page_text:
+                    text += page_text + "\n"
+            return text.strip()
+    except Exception as e:
+        logger.error(f"Error extracting text from PDF: {e}")
+        # Fallback: try basic text extraction
+        try:
+            text = file_content.decode('utf-8', errors='ignore')
+            return text
+        except:
+            raise Exception("Could not extract text from PDF file")
 
 def extract_text_from_docx(file_content: bytes) -> str:
-    """Extract text from DOCX file - simplified version"""
-    # In a real implementation, we would use docx2txt
-    # For testing purposes, we'll just return a sample text
-    return """
-    John Doe
-    john.doe@example.com
-    (555) 123-4567
+    """Extract text from DOCX file using docx2txt"""
+    import docx2txt
+    import io
     
-    SKILLS
-    Python, JavaScript, React, Machine Learning, SQL, Git
-    
-    EXPERIENCE
-    Software Engineer, TechCorp Inc.
-    2020-2023
-    Developed web applications using React and Node.js
-    Implemented machine learning models for data analysis
-    
-    Junior Developer, StartupXYZ
-    2018-2020
-    Built responsive websites using HTML, CSS, and JavaScript
-    
-    EDUCATION
-    University of Technology
-    Bachelor of Science in Computer Science, 2018
-    """
+    try:
+        text = docx2txt.process(io.BytesIO(file_content))
+        return text.strip() if text else ""
+    except Exception as e:
+        logger.error(f"Error extracting text from DOCX: {e}")
+        # Fallback: try basic text extraction
+        try:
+            text = file_content.decode('utf-8', errors='ignore')
+            return text
+        except:
+            raise Exception("Could not extract text from DOCX file")
 
 def extract_contact_info(text: str) -> Dict[str, str]:
     """Extract contact information from resume text"""
