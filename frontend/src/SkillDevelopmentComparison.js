@@ -51,6 +51,91 @@ const SkillDevelopmentComparison = ({ resumeId, availableSkills }) => {
     }
   };
 
+  const generateLineChartData = () => {
+    if (!comparisonData) return null;
+
+    const jobTitles = comparisonData.original_matches.map(match => match.job.title);
+    const originalScores = comparisonData.original_matches.map(match => Math.round(match.match_score));
+    const modifiedScores = comparisonData.modified_matches.map(match => Math.round(match.match_score));
+
+    return {
+      labels: jobTitles,
+      datasets: [
+        {
+          label: `Before Learning ${comparisonData.skill_developed}`,
+          data: originalScores,
+          borderColor: 'rgba(239, 68, 68, 1)',
+          backgroundColor: 'rgba(239, 68, 68, 0.1)',
+          borderWidth: 3,
+          fill: false,
+          tension: 0.4,
+        },
+        {
+          label: `After Learning ${comparisonData.skill_developed}`,
+          data: modifiedScores,
+          borderColor: 'rgba(34, 197, 94, 1)',
+          backgroundColor: 'rgba(34, 197, 94, 0.1)',
+          borderWidth: 3,
+          fill: false,
+          tension: 0.4,
+        },
+      ],
+    };
+  };
+
+  const lineChartOptions = {
+    responsive: true,
+    plugins: {
+      legend: {
+        position: 'top',
+      },
+      title: {
+        display: true,
+        text: 'Job Match Score Progression',
+      },
+      tooltip: {
+        callbacks: {
+          afterLabel: function(context) {
+            const matchIndex = context.dataIndex;
+            const isOriginal = context.dataset.label.includes('Before');
+            const match = isOriginal 
+              ? comparisonData?.original_matches[matchIndex]
+              : comparisonData?.modified_matches[matchIndex];
+            
+            if (match) {
+              return [
+                `Company: ${match.job.company}`,
+                `Location: ${match.job.location}`,
+                `Matching Skills: ${match.matching_skills.length}`,
+                `Skills to Develop: ${match.missing_skills.length}`
+              ];
+            }
+            return [];
+          }
+        }
+      }
+    },
+    scales: {
+      y: {
+        beginAtZero: true,
+        max: 100,
+        title: {
+          display: true,
+          text: 'Match Score (%)'
+        }
+      },
+      x: {
+        title: {
+          display: true,
+          text: 'Job Positions'
+        }
+      }
+    },
+    interaction: {
+      intersect: false,
+    },
+  };
+
   const generateChartData = (matches, title, color) => {
     const jobTitles = matches.map(match => match.job.title);
     const matchScores = matches.map(match => Math.round(match.match_score));
