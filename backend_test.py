@@ -199,10 +199,10 @@ class JobMateAPITester(unittest.TestCase):
         print(f"✅ Get resumes endpoint test passed - Found {len(resumes)} resumes")
         
         # Verify our uploaded resume is in the list
-        if self.resume_id:
+        if hasattr(JobMateAPITester, 'resume_id') and JobMateAPITester.resume_id:
             resume_ids = [resume["id"] for resume in resumes]
-            self.assertIn(self.resume_id, resume_ids)
-            print(f"✅ Verified our uploaded resume (ID: {self.resume_id}) is in the database")
+            self.assertIn(JobMateAPITester.resume_id, resume_ids)
+            print(f"✅ Verified our uploaded resume (ID: {JobMateAPITester.resume_id}) is in the database")
 
     def test_07_skill_development_comparison(self):
         """Test skill development comparison endpoint"""
