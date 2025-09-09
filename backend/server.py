@@ -167,21 +167,84 @@ def extract_skills(text: str) -> List[str]:
     """Extract skills from resume text using keyword matching"""
     skills = set()
     
-    # Common tech skills database
+    # Comprehensive tech skills database
     tech_skills = [
-        'Python', 'Java', 'JavaScript', 'React', 'Angular', 'Vue', 'Node.js', 'Express',
-        'Django', 'Flask', 'Spring', 'SQL', 'MySQL', 'PostgreSQL', 'MongoDB', 'Redis',
-        'Docker', 'Kubernetes', 'AWS', 'Azure', 'GCP', 'Git', 'Jenkins', 'CI/CD',
-        'HTML', 'CSS', 'Bootstrap', 'Tailwind', 'SASS', 'TypeScript', 'PHP', 'Ruby',
-        'C++', 'C#', 'Go', 'Rust', 'Swift', 'Kotlin', 'R', 'MATLAB', 'Pandas', 'NumPy',
-        'TensorFlow', 'PyTorch', 'Scikit-learn', 'Machine Learning', 'Deep Learning',
-        'Data Science', 'Artificial Intelligence', 'NLP', 'Computer Vision'
+        # Programming Languages
+        'Python', 'Java', 'JavaScript', 'TypeScript', 'C++', 'C#', 'C', 'Go', 'Rust', 
+        'Swift', 'Kotlin', 'Scala', 'R', 'MATLAB', 'PHP', 'Ruby', 'Perl', 'Shell',
+        'PowerShell', 'Bash', 'VB.NET', 'Assembly', 'Objective-C', 'Dart', 'Julia',
+        
+        # Web Technologies
+        'React', 'Angular', 'Vue', 'Vue.js', 'Svelte', 'Next.js', 'Nuxt.js', 'Gatsby',
+        'Node.js', 'Express', 'Express.js', 'Koa', 'FastAPI', 'Django', 'Flask', 
+        'Spring', 'Spring Boot', 'Laravel', 'CodeIgniter', 'ASP.NET', 'Rails',
+        'HTML', 'HTML5', 'CSS', 'CSS3', 'SCSS', 'SASS', 'Less', 'Bootstrap', 
+        'Tailwind', 'Tailwind CSS', 'Material-UI', 'Ant Design', 'Semantic UI',
+        
+        # Databases
+        'SQL', 'MySQL', 'PostgreSQL', 'MongoDB', 'Redis', 'SQLite', 'Oracle', 
+        'SQL Server', 'MariaDB', 'Cassandra', 'DynamoDB', 'Neo4j', 'InfluxDB',
+        'CouchDB', 'Firebase', 'Supabase', 'PlanetScale',
+        
+        # Cloud & DevOps
+        'AWS', 'Azure', 'GCP', 'Google Cloud', 'Docker', 'Kubernetes', 'Jenkins',
+        'CI/CD', 'GitHub Actions', 'GitLab CI', 'Travis CI', 'CircleCI', 'Terraform',
+        'Ansible', 'Chef', 'Puppet', 'Vagrant', 'Nginx', 'Apache', 'Linux', 'Ubuntu',
+        
+        # Version Control & Tools
+        'Git', 'GitHub', 'GitLab', 'Bitbucket', 'SVN', 'Mercurial', 'Jira', 'Confluence',
+        'Slack', 'Trello', 'Asana', 'Monday.com', 'Notion', 'Figma', 'Adobe XD',
+        'Sketch', 'InVision', 'Zeplin', 'Postman', 'Insomnia', 'Swagger',
+        
+        # Data Science & AI
+        'Machine Learning', 'Deep Learning', 'Artificial Intelligence', 'AI', 'ML',
+        'Data Science', 'Data Analysis', 'Statistics', 'Pandas', 'NumPy', 'SciPy',
+        'Matplotlib', 'Seaborn', 'Plotly', 'TensorFlow', 'PyTorch', 'Keras',
+        'Scikit-learn', 'OpenCV', 'NLTK', 'spaCy', 'Hugging Face', 'LangChain',
+        'NLP', 'Computer Vision', 'Neural Networks', 'CNN', 'RNN', 'LSTM', 'GAN',
+        'Jupyter', 'Colab', 'Tableau', 'Power BI', 'Looker', 'D3.js',
+        
+        # Mobile Development
+        'iOS', 'Android', 'React Native', 'Flutter', 'Xamarin', 'Cordova', 'PhoneGap',
+        'Ionic', 'Xcode', 'Android Studio', 'SwiftUI', 'UIKit', 'Jetpack Compose',
+        
+        # Game Development
+        'Unity', 'Unreal Engine', 'Godot', 'GameMaker', 'Construct', 'Phaser',
+        'Three.js', 'WebGL', 'OpenGL', 'DirectX', 'Vulkan',
+        
+        # Other Technologies
+        'Blockchain', 'Ethereum', 'Solidity', 'Web3', 'Smart Contracts', 'DeFi',
+        'GraphQL', 'REST', 'SOAP', 'gRPC', 'WebSocket', 'Socket.io', 'RabbitMQ',
+        'Kafka', 'Elasticsearch', 'Solr', 'Spark', 'Hadoop', 'Flink', 'Storm',
+        'Microservices', 'Serverless', 'Lambda', 'API Gateway', 'Load Balancing',
+        
+        # Methodologies & Concepts
+        'Agile', 'Scrum', 'Kanban', 'DevOps', 'TDD', 'BDD', 'DDD', 'Clean Code',
+        'SOLID', 'Design Patterns', 'Microservices', 'Monolith', 'Event-Driven',
+        'Test Automation', 'Unit Testing', 'Integration Testing', 'E2E Testing',
+        'Performance Testing', 'Security Testing', 'UI/UX', 'Responsive Design',
+        'SEO', 'Accessibility', 'PWA', 'SPA', 'SSR', 'JAMstack'
     ]
     
     # Extract skills using keyword matching (case insensitive)
     text_lower = text.lower()
+    
+    # Also look for skills in specific sections
+    sections = ['skills', 'technical skills', 'technologies', 'competencies', 'expertise']
+    for section in sections:
+        section_pattern = rf'{section}[:\s]+(.*?)(?=\n\s*[A-Z][A-Z\s]*[:\n]|\n\s*\n|$)'
+        matches = re.findall(section_pattern, text, re.IGNORECASE | re.DOTALL)
+        for match in matches:
+            # Skills in dedicated sections are more likely to be accurate
+            for skill in tech_skills:
+                if skill.lower() in match.lower():
+                    skills.add(skill)
+    
+    # General text search for skills
     for skill in tech_skills:
-        if skill.lower() in text_lower:
+        # Use word boundaries to avoid partial matches
+        pattern = rf'\b{re.escape(skill.lower())}\b'
+        if re.search(pattern, text_lower):
             skills.add(skill)
     
     return list(skills)
