@@ -310,6 +310,24 @@ const SkillDevelopmentComparison = ({ resumeId, availableSkills }) => {
             </div>
           </div>
 
+          {/* Line Chart Comparison */}
+          <div className="space-y-4">
+            <h3 className="text-xl font-semibold text-gray-900">Skill Development Progress Overview</h3>
+            <div className="h-96">
+              <Line
+                data={generateLineChartData()}
+                options={lineChartOptions}
+              />
+            </div>
+            <div className="bg-gray-50 rounded-lg p-4">
+              <p className="text-sm text-gray-600">
+                <strong>Line Chart Analysis:</strong> This visualization shows the progression of job match scores 
+                before and after learning <span className="font-medium text-blue-600">{comparisonData.skill_developed}</span>. 
+                The green line represents improved match scores after skill development, while the red line shows your current position.
+              </p>
+            </div>
+          </div>
+
           {/* Improvement Summary */}
           <div className="bg-blue-50 rounded-lg p-4">
             <h4 className="font-semibold text-blue-900 mb-3">Impact Summary</h4>
