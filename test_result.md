@@ -288,16 +288,12 @@ metadata:
 
 test_plan:
   current_focus:
-    - "API Root Endpoint"
-    - "Get Jobs Endpoint"
-    - "Upload Resume Endpoint"
-    - "Job Matching Endpoint"
-    - "Career Suggestions Endpoint"
-    - "Get Resumes Endpoint"
-    - "Skill Development Comparison Endpoint"
-    - "Error Handling"
+    - "Upload Resume Endpoint - Real Content Processing"
+    - "Resume Content Analysis - Different Skills Extraction"
+    - "Job Matching with Real Resume Data"
+    - "Skill Development Comparison with Real Data"
   stuck_tasks: []
-  test_all: true
+  test_all: false
   test_priority: "high_first"
 
 agent_communication:
