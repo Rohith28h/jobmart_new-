@@ -206,6 +206,9 @@ backend:
         -working: true
         -agent: "testing"
         -comment: "API root endpoint is working correctly, returning the expected message."
+        -working: true
+        -agent: "testing"
+        -comment: "Re-tested API root endpoint - working correctly, returns proper JobMate API message."
 
   - task: "Get Jobs Endpoint"
     implemented: true
@@ -218,6 +221,9 @@ backend:
         -working: true
         -agent: "testing"
         -comment: "Get jobs endpoint is working correctly, returning a list of 5 job listings with all required fields."
+        -working: true
+        -agent: "testing"
+        -comment: "Re-tested get jobs endpoint - working correctly, returns 5 job listings with all required fields (id, title, company, description, requirements)."
 
   - task: "Upload Resume Endpoint"
     implemented: true
@@ -230,6 +236,9 @@ backend:
         -working: true
         -agent: "testing"
         -comment: "Upload resume endpoint is working correctly, accepting PDF files and extracting skills and contact information. Minor issue: Phone extraction sometimes fails but this doesn't affect core functionality."
+        -working: true
+        -agent: "testing"
+        -comment: "Re-tested upload resume endpoint - working correctly. Successfully extracts 11 skills including Node.js, JavaScript, SQL, HTML, Python, CSS, React, Machine Learning, Java, Git. Email extraction working perfectly. Minor: Phone extraction failed but this doesn't affect core functionality."
 
   - task: "Job Matching Endpoint"
     implemented: true
@@ -242,6 +251,9 @@ backend:
         -working: true
         -agent: "testing"
         -comment: "Job matching endpoint is working correctly, returning match scores, matching skills, missing skills, and recommendations for each job."
+        -working: true
+        -agent: "testing"
+        -comment: "Re-tested job matching endpoint - working correctly. Returns proper match scores (Full Stack Developer: 66.76%, Frontend Developer: 53.54%, etc.) with matching skills, missing skills, and recommendations for each job."
 
   - task: "Career Suggestions Endpoint"
     implemented: true
@@ -254,6 +266,9 @@ backend:
         -working: true
         -agent: "testing"
         -comment: "Career suggestions endpoint is working correctly, returning career paths with fit scores, required skills, and learning resources."
+        -working: true
+        -agent: "testing"
+        -comment: "Re-tested career suggestions endpoint - working correctly. Returns career paths with accurate fit scores (Full Stack Developer: 100% fit, Data Scientist: 60% fit, etc.) along with required skills and learning resources."
 
   - task: "Get Resumes Endpoint"
     implemented: true
@@ -266,6 +281,9 @@ backend:
         -working: true
         -agent: "testing"
         -comment: "Get resumes endpoint is working correctly, returning a list of all uploaded resumes."
+        -working: true
+        -agent: "testing"
+        -comment: "Re-tested get resumes endpoint - working correctly. Returns list of uploaded resumes and properly verifies uploaded resume is stored in database."
 
   - task: "Skill Development Comparison Endpoint"
     implemented: true
@@ -278,6 +296,9 @@ backend:
         -working: true
         -agent: "testing"
         -comment: "Skill development comparison endpoint is working correctly, showing different match scores before and after adding a new skill. Tested with Docker, React, and Python skills, all showing appropriate score changes."
+        -working: true
+        -agent: "testing"
+        -comment: "Re-tested skill development comparison endpoint - working correctly. Tested with Docker, React, and Python skills. Shows proper score changes: Docker improves DevOps match by 7.66%, React improves Full Stack match by 7.10%, Python improves Data Scientist match by 5.23%. All comparisons working as expected."
 
   - task: "Error Handling"
     implemented: true
@@ -293,6 +314,9 @@ backend:
         -working: true
         -agent: "testing"
         -comment: "Fixed error handling by modifying exception handling in API endpoints to re-raise HTTP exceptions. Now correctly returns 404 for invalid resume IDs and 400 for invalid file types."
+        -working: true
+        -agent: "testing"
+        -comment: "Re-tested error handling - working correctly. Returns proper HTTP status codes: 404 for invalid resume IDs, 400 for invalid file types, 422 for missing parameters."
 
 frontend:
   - task: "Frontend Testing"
