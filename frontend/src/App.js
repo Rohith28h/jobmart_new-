@@ -417,6 +417,7 @@ const JobMate = () => {
             />
           </div>
         )}
+        {currentView === 'about' && <About />}
       </main>
 
       {/* Footer */}
