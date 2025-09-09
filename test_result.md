@@ -192,7 +192,7 @@ agent_communication:
   - agent: "testing"
     message: "Backend comprehensive testing completed. All endpoints working correctly including new skill development comparison endpoint. Frontend testing needed."
 
-user_problem_statement: "Test the new skill development comparison API endpoint and the complete JobMate backend functionality including all existing endpoints and the new skill development comparison endpoint."
+user_problem_statement: "Test the updated resume parsing functionality to ensure it now properly analyzes actual uploaded resume content instead of returning hardcoded test data. Please specifically test: 1. Upload Resume Endpoint - Upload a real resume file and verify it extracts actual skills, contact info, and content from the uploaded file 2. Resume Content Analysis - Verify that different resumes with different skills result in different extracted data 3. Job Matching with Real Resume Data - Test that job matching uses the actual extracted skills from the uploaded resume 4. Skill Development Comparison with Real Data - Test that the comparison feature works with actual resume skills"
 
 backend:
   - task: "API Root Endpoint"
