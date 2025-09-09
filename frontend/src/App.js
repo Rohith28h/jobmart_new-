@@ -130,6 +130,16 @@ const JobMate = () => {
                   Results
                 </button>
               )}
+              <button
+                onClick={() => setCurrentView('about')}
+                className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+                  currentView === 'about'
+                    ? 'bg-blue-100 text-blue-700'
+                    : 'text-gray-600 hover:text-gray-900'
+                }`}
+              >
+                About
+              </button>
             </nav>
           </div>
         </div>
