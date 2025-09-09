@@ -157,11 +157,12 @@ class JobMateAPITester(unittest.TestCase):
     
     def test_05_career_suggestions(self):
         """Test career suggestions endpoint"""
-        if not self.resume_id:
+        if not hasattr(JobMateAPITester, 'resume_id') or not JobMateAPITester.resume_id:
             self.skipTest("Resume ID not available, skipping career suggestions test")
         
-        print(f"\n🔍 Testing career suggestions endpoint with resume ID: {self.resume_id}...")
-        response = requests.get(f"{API_URL}/career-suggestions/{self.resume_id}")
+        resume_id = JobMateAPITester.resume_id
+        print(f"\n🔍 Testing career suggestions endpoint with resume ID: {resume_id}...")
+        response = requests.get(f"{API_URL}/career-suggestions/{resume_id}")
         
         self.assertEqual(response.status_code, 200)
         data = response.json()
