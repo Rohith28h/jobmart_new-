@@ -132,13 +132,32 @@ def extract_contact_info(text: str) -> Dict[str, str]:
     if phones:
         contact_info["phone"] = ''.join(phones[0]) if isinstance(phones[0], tuple) else phones[0]
     
-    # Extract name (first few words, heuristic)
-    lines = text.split('\n')
-    for line in lines[:5]:
+    # Extract name (improved heuristic)
+    lines = [line.strip() for line in text.split('\n') if line.strip()]
+    
+    # Look for name in first few lines
+    for i, line in enumerate(lines[:8]):  # Check first 8 lines
         line = line.strip()
-        if line and len(line.split()) <= 4 and not any(char.isdigit() for char in line):
-            # Likely a name
-            if not any(keyword in line.lower() for keyword in ['resume', 'cv', 'curriculum', 'email', 'phone']):
+        
+        # Skip lines that are clearly not names
+        if not line:
+            continue
+        if any(keyword in line.lower() for keyword in [
+            'resume', 'cv', 'curriculum', 'email', 'phone', 'address', 
+            'experience', 'education', 'skills', 'objective', 'summary',
+            'profile', 'contact', 'linkedin', 'github', 'portfolio'
+        ]):
+            continue
+        if '@' in line or any(char.isdigit() for char in line if char not in [' ', '-', '.']):
+            continue
+        if len(line.split()) > 6:  # Too long to be a name
+            continue
+            
+        # Check if line looks like a name
+        words = line.split()
+        if 1 <= len(words) <= 4:  # Names are typically 1-4 words
+            # Check if words start with capital letters (common for names)
+            if all(word[0].isupper() for word in words if word):
                 contact_info["name"] = line
                 break
     
