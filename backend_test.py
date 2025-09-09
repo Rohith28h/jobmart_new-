@@ -94,6 +94,7 @@ class JobMateAPITester(unittest.TestCase):
         self.assertIn("resume", data)
         
         # Store resume ID for subsequent tests
+        JobMateAPITester.resume_id = data["resume"]["id"]
         self.resume_id = data["resume"]["id"]
         
         # Verify extracted skills
