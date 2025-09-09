@@ -206,17 +206,18 @@ class JobMateAPITester(unittest.TestCase):
 
     def test_07_skill_development_comparison(self):
         """Test skill development comparison endpoint"""
-        if not self.resume_id:
+        if not hasattr(JobMateAPITester, 'resume_id') or not JobMateAPITester.resume_id:
             self.skipTest("Resume ID not available, skipping skill development comparison test")
         
-        print(f"\n🔍 Testing skill development comparison endpoint with resume ID: {self.resume_id}...")
+        resume_id = JobMateAPITester.resume_id
+        print(f"\n🔍 Testing skill development comparison endpoint with resume ID: {resume_id}...")
         
         # Test with different skills
         test_skills = ["Docker", "React", "Python"]
         
         for skill in test_skills:
             print(f"   Testing with skill: {skill}")
-            response = requests.get(f"{API_URL}/skill-development-comparison/{self.resume_id}?skill_to_develop={skill}")
+            response = requests.get(f"{API_URL}/skill-development-comparison/{resume_id}?skill_to_develop={skill}")
             
             self.assertEqual(response.status_code, 200)
             data = response.json()
