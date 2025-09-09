@@ -266,9 +266,9 @@ class JobMateAPITester(unittest.TestCase):
         self.assertEqual(response.status_code, 404)
         
         # Test missing skill parameter
-        if self.resume_id:
+        if hasattr(JobMateAPITester, 'resume_id') and JobMateAPITester.resume_id:
             print("   Testing missing skill parameter...")
-            response = requests.get(f"{API_URL}/skill-development-comparison/{self.resume_id}")
+            response = requests.get(f"{API_URL}/skill-development-comparison/{JobMateAPITester.resume_id}")
             self.assertNotEqual(response.status_code, 200)
         
         # Test invalid file type for upload
