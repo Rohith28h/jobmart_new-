@@ -126,11 +126,12 @@ class JobMateAPITester(unittest.TestCase):
     
     def test_04_match_jobs(self):
         """Test job matching endpoint"""
-        if not self.resume_id:
+        if not hasattr(JobMateAPITester, 'resume_id') or not JobMateAPITester.resume_id:
             self.skipTest("Resume ID not available, skipping job matching test")
         
-        print(f"\n🔍 Testing job matching endpoint with resume ID: {self.resume_id}...")
-        response = requests.post(f"{API_URL}/match-jobs/{self.resume_id}")
+        resume_id = JobMateAPITester.resume_id
+        print(f"\n🔍 Testing job matching endpoint with resume ID: {resume_id}...")
+        response = requests.post(f"{API_URL}/match-jobs/{resume_id}")
         
         self.assertEqual(response.status_code, 200)
         data = response.json()
