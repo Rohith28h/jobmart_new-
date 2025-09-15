@@ -411,6 +411,9 @@ const JobMate = () => {
               )}
             </div>
 
+            {/* AI Resume Q&A */}
+            <ResumeQA resumeId={resumeData.id} />
+
             {/* Skill Development Comparison */}
             <SkillDevelopmentComparison 
               resumeId={resumeData.id}
