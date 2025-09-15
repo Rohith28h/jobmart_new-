@@ -625,6 +625,129 @@ async def skill_development_comparison(resume_id: str, skill_to_develop: str):
         logger.error(f"Error in skill development comparison: {e}")
         raise HTTPException(status_code=500, detail="Error calculating skill development comparison")
 
+# AI Resume Q&A Helper Functions
+def format_resume_for_ai(resume: ResumeData) -> str:
+    """Format resume data for AI context"""
+    resume_text = f"""
+RESUME CONTENT:
+
+PERSONAL INFORMATION:
+- Name: {resume.name or 'Not provided'}
+- Email: {resume.email or 'Not provided'}
+- Phone: {resume.phone or 'Not provided'}
+
+SKILLS:
+{', '.join(resume.skills) if resume.skills else 'No skills listed'}
+
+EXPERIENCE:
+"""
+    
+    if resume.experience:
+        for i, exp in enumerate(resume.experience, 1):
+            resume_text += f"{i}. {exp.get('title', 'Unknown Position')} at {exp.get('company', 'Unknown Company')}\n"
+            if exp.get('duration'):
+                resume_text += f"   Duration: {exp['duration']}\n"
+            if exp.get('description'):
+                resume_text += f"   Description: {exp['description']}\n"
+            resume_text += "\n"
+    else:
+        resume_text += "No experience information provided\n"
+    
+    return resume_text
+
+async def get_ai_resume_answer(resume_text: str, question: str) -> ResumeQAResponse:
+    """Get AI-powered answer about the resume"""
+    try:
+        # Initialize AI chat with system message
+        system_message = """You are a helpful AI assistant that answers questions and provides useful suggestions based on the given resume.
+
+Instructions:
+- First, answer the user's question strictly based on the resume content.
+- Then, if relevant, provide a short and practical suggestion or improvement. 
+  (e.g., skills to add, a better way to present experience, and career growth tips).
+- If the answer cannot be found in the resume, say: 
+  "This information is not available in the resume." 
+  But still try to provide a general suggestion if possible.
+- Keep answers clear, concise, and professional.
+- Format your response as: ANSWER: [your answer] SUGGESTIONS: [bullet points if any]"""
+
+        # Get API key from environment
+        api_key = os.environ.get('EMERGENT_LLM_KEY')
+        if not api_key:
+            raise HTTPException(status_code=500, detail="AI service not configured")
+
+        # Create AI chat instance
+        chat = LlmChat(
+            api_key=api_key,
+            session_id=f"resume_qa_{uuid.uuid4()}",
+            system_message=system_message
+        ).with_model("gemini", "gemini-2.0-flash")
+
+        # Prepare the message with resume context and question
+        user_message = UserMessage(
+            text=f"{resume_text}\n\nUser Question: {question}"
+        )
+
+        # Get AI response
+        response = await chat.send_message(user_message)
+        
+        # Parse the response to extract answer and suggestions
+        response_text = response.strip()
+        
+        # Try to split answer and suggestions
+        answer = ""
+        suggestions = []
+        
+        if "SUGGESTIONS:" in response_text:
+            parts = response_text.split("SUGGESTIONS:", 1)
+            answer = parts[0].replace("ANSWER:", "").strip()
+            suggestions_text = parts[1].strip()
+            
+            # Extract bullet points or numbered suggestions
+            suggestion_lines = [line.strip() for line in suggestions_text.split('\n') if line.strip()]
+            suggestions = [line.lstrip('•-*1234567890. ') for line in suggestion_lines if line.strip()]
+        else:
+            answer = response_text.replace("ANSWER:", "").strip()
+        
+        return ResumeQAResponse(
+            answer=answer,
+            suggestions=suggestions[:5]  # Limit to 5 suggestions
+        )
+        
+    except Exception as e:
+        logger.error(f"Error getting AI response: {e}")
+        # Fallback response
+        return ResumeQAResponse(
+            answer="I'm sorry, I'm unable to process your question at the moment. Please try again later.",
+            suggestions=["Consider updating your resume with more specific details about your experience and skills."]
+        )
+
+@api_router.post("/resume-qa", response_model=ResumeQAResponse)
+async def ask_resume_question(request: ResumeQARequest):
+    """Ask questions about a specific resume using AI"""
+    try:
+        # Get resume from database
+        resume_doc = await db.resumes.find_one({"id": request.resume_id})
+        if not resume_doc:
+            raise HTTPException(status_code=404, detail="Resume not found")
+        
+        resume = ResumeData(**resume_doc)
+        
+        # Format resume for AI context
+        resume_text = format_resume_for_ai(resume)
+        
+        # Get AI response
+        response = await get_ai_resume_answer(resume_text, request.question)
+        
+        return response
+        
+    except HTTPException:
+        # Re-raise HTTP exceptions
+        raise
+    except Exception as e:
+        logger.error(f"Error in resume Q&A: {e}")
+        raise HTTPException(status_code=500, detail="Error processing resume question")
+
 # Include the router in the main app
 app.include_router(api_router)
 
