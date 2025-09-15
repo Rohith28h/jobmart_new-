@@ -472,7 +472,10 @@ if __name__ == "__main__":
     test_suite.addTest(JobMateAPITester('test_05_career_suggestions'))
     test_suite.addTest(JobMateAPITester('test_06_get_resumes'))
     test_suite.addTest(JobMateAPITester('test_07_skill_development_comparison'))
-    test_suite.addTest(JobMateAPITester('test_08_error_scenarios'))
+    test_suite.addTest(JobMateAPITester('test_08_resume_qa_functionality'))
+    test_suite.addTest(JobMateAPITester('test_09_resume_qa_error_handling'))
+    test_suite.addTest(JobMateAPITester('test_10_ai_integration_verification'))
+    test_suite.addTest(JobMateAPITester('test_11_error_scenarios'))
     
     # Run the tests
     runner = unittest.TextTestRunner(verbosity=2)
