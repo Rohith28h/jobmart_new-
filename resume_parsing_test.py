@@ -7,7 +7,7 @@ import json
 import time
 
 # Get the backend URL from the frontend .env file
-BACKEND_URL = "https://error-free-viz.preview.emergentagent.com"
+BACKEND_URL = "https://resume-upload-fix-1.preview.emergentagent.com"
 API_URL = f"{BACKEND_URL}/api"
 
 class ResumeParsingTester(unittest.TestCase):
