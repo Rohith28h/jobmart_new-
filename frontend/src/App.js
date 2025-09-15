@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import SkillDevelopmentComparison from './SkillDevelopmentComparison';
 import About from './About';
+import ResumeQA from './ResumeQA';
 import './App.css';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
