@@ -255,6 +255,21 @@ backend:
         -agent: "testing"
         -comment: "VERIFIED: Resume upload functionality is working correctly after the fix. All services running (backend, frontend, mongodb). Dependencies properly installed (scipy, pdfplumber, docx2txt). Resume upload endpoint successfully processes files, extracts 27 skills from test resume, extracts contact information (name: Sarah Johnson, email: sarah.johnson@email.com), stores data in MongoDB, and enables job matching. Error handling correctly rejects invalid file types. The previous 'Error uploading resume. Please try again.' issue has been completely resolved. All 8 backend endpoints tested and working perfectly."
 
+  - task: "AI Resume Q&A Feature Implementation"
+    implemented: true
+    working: true
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+        -working: true
+        -agent: "main"
+        -comment: "Implemented AI-powered resume Q&A feature using Gemini 2.0-flash model via emergentintegrations library. Created POST /api/resume-qa endpoint with ResumeQARequest/Response models. Feature allows users to ask questions about their resume and receive intelligent answers with improvement suggestions."
+        -working: true
+        -agent: "testing"
+        -comment: "COMPREHENSIVE AI Q&A TESTING COMPLETED: All tests passed (11/11). POST /api/resume-qa endpoint working perfectly - answered 8/8 test questions successfully with contextual, relevant responses. AI integration with Gemini 2.0-flash functioning correctly via emergentintegrations library. AI provides 2-5 practical improvement suggestions per question. Error handling robust: invalid resume IDs (404), missing questions (422), empty questions (graceful), malformed requests (400). AI demonstrates understanding of resume content with career-relevant recommendations. EMERGENT_LLM_KEY authentication working. Feature is production-ready."
+
 frontend:
   - task: "About Page Implementation"
     implemented: true
