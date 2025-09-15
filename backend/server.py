@@ -74,6 +74,14 @@ class JobMatch(BaseModel):
     missing_skills: List[str]
     recommendations: List[str]
 
+class ResumeQARequest(BaseModel):
+    resume_id: str
+    question: str
+
+class ResumeQAResponse(BaseModel):
+    answer: str
+    suggestions: List[str] = []
+
 class CareerSuggestion(BaseModel):
     career_path: str
     current_fit: float
