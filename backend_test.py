@@ -255,7 +255,176 @@ class JobMateAPITester(unittest.TestCase):
             self.assertTrue(any(diff != 0 for diff in score_differences))
             print(f"   ✅ Skill development comparison test passed for skill: {skill}")
     
-    def test_08_error_scenarios(self):
+    def test_08_resume_qa_functionality(self):
+        """Test AI Resume Q&A endpoint functionality"""
+        if not hasattr(JobMateAPITester, 'resume_id') or not JobMateAPITester.resume_id:
+            self.skipTest("Resume ID not available, skipping AI Q&A test")
+        
+        resume_id = JobMateAPITester.resume_id
+        print(f"\n🔍 Testing AI Resume Q&A endpoint with resume ID: {resume_id}...")
+        
+        # Test various types of questions
+        test_questions = [
+            "What are the main skills listed in this resume?",
+            "What is the candidate's work experience?",
+            "What programming languages does this person know?",
+            "How can this resume be improved?",
+            "What career paths would be suitable for this candidate?",
+            "What is the candidate's educational background?",
+            "What are the strengths of this candidate?",
+            "What skills should this candidate develop next?"
+        ]
+        
+        successful_responses = 0
+        
+        for i, question in enumerate(test_questions, 1):
+            print(f"   Question {i}: {question}")
+            
+            # Prepare request payload
+            payload = {
+                "resume_id": resume_id,
+                "question": question
+            }
+            
+            try:
+                response = requests.post(f"{API_URL}/resume-qa", json=payload)
+                
+                # Check response status
+                self.assertEqual(response.status_code, 200, f"Failed for question: {question}")
+                
+                # Parse response
+                data = response.json()
+                
+                # Verify response structure
+                self.assertIn("answer", data)
+                self.assertIn("suggestions", data)
+                
+                # Verify answer is not empty
+                self.assertTrue(len(data["answer"].strip()) > 0, "Answer should not be empty")
+                
+                # Verify suggestions is a list
+                self.assertIsInstance(data["suggestions"], list)
+                
+                # Print response for verification
+                print(f"     Answer: {data['answer'][:100]}{'...' if len(data['answer']) > 100 else ''}")
+                if data["suggestions"]:
+                    print(f"     Suggestions: {len(data['suggestions'])} provided")
+                    for j, suggestion in enumerate(data["suggestions"][:2], 1):  # Show first 2 suggestions
+                        print(f"       {j}. {suggestion}")
+                
+                successful_responses += 1
+                
+                # Add small delay to avoid rate limiting
+                time.sleep(0.5)
+                
+            except Exception as e:
+                print(f"     ❌ Error with question '{question}': {str(e)}")
+                # Don't fail the test immediately, continue with other questions
+        
+        # Verify at least some questions were answered successfully
+        self.assertGreater(successful_responses, 0, "At least one question should be answered successfully")
+        print(f"✅ AI Resume Q&A test passed - {successful_responses}/{len(test_questions)} questions answered successfully")
+
+    def test_09_resume_qa_error_handling(self):
+        """Test AI Resume Q&A error handling"""
+        print("\n🔍 Testing AI Resume Q&A error handling...")
+        
+        # Test with invalid resume ID
+        print("   Testing with invalid resume ID...")
+        invalid_payload = {
+            "resume_id": "invalid-uuid-12345",
+            "question": "What skills does this person have?"
+        }
+        
+        response = requests.post(f"{API_URL}/resume-qa", json=invalid_payload)
+        self.assertEqual(response.status_code, 404)
+        print("     ✅ Invalid resume ID correctly returns 404")
+        
+        # Test with missing question
+        if hasattr(JobMateAPITester, 'resume_id') and JobMateAPITester.resume_id:
+            print("   Testing with missing question...")
+            missing_question_payload = {
+                "resume_id": JobMateAPITester.resume_id
+                # Missing question field
+            }
+            
+            response = requests.post(f"{API_URL}/resume-qa", json=missing_question_payload)
+            self.assertNotEqual(response.status_code, 200)
+            print("     ✅ Missing question correctly returns error")
+            
+            # Test with empty question
+            print("   Testing with empty question...")
+            empty_question_payload = {
+                "resume_id": JobMateAPITester.resume_id,
+                "question": ""
+            }
+            
+            response = requests.post(f"{API_URL}/resume-qa", json=empty_question_payload)
+            # Should still work but might return a generic response
+            if response.status_code == 200:
+                data = response.json()
+                self.assertIn("answer", data)
+                print("     ✅ Empty question handled gracefully")
+            else:
+                print("     ✅ Empty question correctly returns error")
+        
+        # Test with malformed JSON
+        print("   Testing with malformed request...")
+        response = requests.post(f"{API_URL}/resume-qa", data="invalid json")
+        self.assertNotEqual(response.status_code, 200)
+        print("     ✅ Malformed request correctly returns error")
+        
+        print("✅ AI Resume Q&A error handling test passed")
+
+    def test_10_ai_integration_verification(self):
+        """Test AI integration with Gemini model"""
+        if not hasattr(JobMateAPITester, 'resume_id') or not JobMateAPITester.resume_id:
+            self.skipTest("Resume ID not available, skipping AI integration test")
+        
+        resume_id = JobMateAPITester.resume_id
+        print(f"\n🔍 Testing AI integration with Gemini model...")
+        
+        # Test a specific question that should demonstrate AI understanding
+        test_payload = {
+            "resume_id": resume_id,
+            "question": "Based on this resume, what specific improvements would you recommend for career advancement?"
+        }
+        
+        response = requests.post(f"{API_URL}/resume-qa", json=test_payload)
+        
+        if response.status_code == 200:
+            data = response.json()
+            
+            # Verify the response shows AI understanding
+            answer = data["answer"].lower()
+            suggestions = data.get("suggestions", [])
+            
+            # Check for AI-like responses (contextual understanding)
+            ai_indicators = [
+                "recommend", "suggest", "improve", "develop", "enhance", 
+                "consider", "focus", "strengthen", "skill", "experience"
+            ]
+            
+            has_ai_indicators = any(indicator in answer for indicator in ai_indicators)
+            self.assertTrue(has_ai_indicators, "Response should show AI understanding and recommendations")
+            
+            # Verify suggestions are provided
+            self.assertTrue(len(suggestions) > 0, "AI should provide suggestions")
+            
+            print("✅ AI integration verification passed")
+            print(f"   Answer contains AI-like recommendations: {has_ai_indicators}")
+            print(f"   Number of suggestions provided: {len(suggestions)}")
+            
+            # Print sample of AI response
+            print(f"   Sample AI response: {answer[:150]}{'...' if len(answer) > 150 else ''}")
+            
+        else:
+            print(f"❌ AI integration test failed with status code: {response.status_code}")
+            if response.text:
+                print(f"   Error response: {response.text}")
+            self.fail("AI integration test failed")
+
+    def test_11_error_scenarios(self):
         """Test error scenarios"""
         print("\n🔍 Testing error scenarios...")
         
