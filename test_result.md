@@ -315,10 +315,7 @@ metadata:
 
 test_plan:
   current_focus:
-    - "Upload Resume Endpoint - Real Content Processing"
-    - "Resume Content Analysis - Different Skills Extraction"
-    - "Job Matching with Real Resume Data"
-    - "Skill Development Comparison with Real Data"
+    - "AI Resume Q&A Feature Implementation"
   stuck_tasks: []
   test_all: false
   test_priority: "high_first"
