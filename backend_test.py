@@ -8,7 +8,17 @@ import json
 import time
 
 # Get the backend URL from the frontend .env file
-BACKEND_URL = "http://localhost:8000"  # Default value
+try:
+    with open('/app/frontend/.env', 'r') as f:
+        for line in f:
+            if line.startswith('REACT_APP_BACKEND_URL='):
+                BACKEND_URL = line.split('=')[1].strip().strip('"')
+                break
+    else:
+        BACKEND_URL = "http://localhost:8000"  # Default value
+except:
+    BACKEND_URL = "http://localhost:8000"  # Default value
+
 API_URL = f"{BACKEND_URL}/api"
 
 class JobMateAPITester(unittest.TestCase):
