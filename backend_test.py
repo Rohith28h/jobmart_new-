@@ -14,8 +14,8 @@ try:
             if line.startswith('REACT_APP_BACKEND_URL='):
                 BACKEND_URL = line.split('=')[1].strip().strip('"')
                 break
-    else:
-        BACKEND_URL = "http://localhost:8000"  # Default value
+        else:
+            BACKEND_URL = "http://localhost:8000"  # Default value
 except:
     BACKEND_URL = "http://localhost:8000"  # Default value
 
