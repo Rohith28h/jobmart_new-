@@ -7,7 +7,7 @@ import tempfile
 import os
 
 # Backend URL
-BACKEND_URL = "https://resume-upload-fix-1.preview.emergentagent.com"
+BACKEND_URL = "https://resume-genius-65.preview.emergentagent.com"
 API_URL = f"{BACKEND_URL}/api"
 
 def create_test_resume():
