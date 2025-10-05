@@ -20,8 +20,27 @@ import numpy as np
 import re
 import json
 
-# Emergent LLM integration
-from emergentintegrations.llm.chat import LlmChat, UserMessage
+# AI Integration - works both locally and on Emergent platform
+try:
+    # Try Emergent integration first (for Emergent platform)
+    from emergentintegrations.llm.chat import LlmChat, UserMessage
+    USE_EMERGENT_INTEGRATION = True
+except ImportError:
+    # Fallback to standard libraries for local development
+    try:
+        import google.generativeai as genai
+        USE_EMERGENT_INTEGRATION = False
+        USE_GOOGLE_AI = True
+    except ImportError:
+        try:
+            from openai import OpenAI
+            USE_EMERGENT_INTEGRATION = False
+            USE_GOOGLE_AI = False
+            USE_OPENAI = True
+        except ImportError:
+            USE_EMERGENT_INTEGRATION = False
+            USE_GOOGLE_AI = False
+            USE_OPENAI = False
 
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
