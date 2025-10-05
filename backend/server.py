@@ -720,7 +720,7 @@ Instructions:
             model = genai.GenerativeModel('gemini-1.5-flash')
             
             prompt = f"{system_message}\n\nResume Content:\n{resume_text}\n\nUser Question: {question}"
-            response = await model.generate_content_async(prompt)
+            response = model.generate_content(prompt)
             response_text = response.text.strip()
             
         elif USE_OPENAI:
