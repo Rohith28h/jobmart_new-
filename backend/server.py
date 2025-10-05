@@ -729,7 +729,8 @@ Instructions:
             if not api_key:
                 raise HTTPException(status_code=500, detail="OPENAI_API_KEY not configured for local development")
                 
-            client = OpenAI(api_key=api_key)
+            from openai import AsyncOpenAI
+            client = AsyncOpenAI(api_key=api_key)
             response = await client.chat.completions.create(
                 model="gpt-4o-mini",
                 messages=[
