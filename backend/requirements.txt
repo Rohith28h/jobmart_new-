@@ -32,4 +32,9 @@ nltk>=3.8.1
 sentence-transformers>=2.2.2
 transformers>=4.36.0
 torch>=2.1.0
-emergentintegrations
+# AI Integration options (choose one):
+# For Emergent platform: emergentintegrations (automatically available)
+# For local development with Google AI:
+google-generativeai>=0.3.0
+# For local development with OpenAI:
+openai>=1.0.0
