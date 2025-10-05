@@ -690,30 +690,67 @@ Instructions:
 - Keep answers clear, concise, and professional.
 - Format your response as: ANSWER: [your answer] SUGGESTIONS: [bullet points if any]"""
 
-        # Get API key from environment
-        api_key = os.environ.get('EMERGENT_LLM_KEY') or 'sk-emergent-38dF4977dAfD25d1b6'
-        if not api_key:
-            raise HTTPException(status_code=500, detail="AI service not configured")
+        response_text = ""
+        
+        if USE_EMERGENT_INTEGRATION:
+            # Use Emergent integration (for Emergent platform)
+            api_key = os.environ.get('EMERGENT_LLM_KEY') or 'sk-emergent-38dF4977dAfD25d1b6'
+            if not api_key:
+                raise HTTPException(status_code=500, detail="AI service not configured")
 
-        # Create AI chat instance
-        chat = LlmChat(
-            api_key=api_key,
-            session_id=f"resume_qa_{uuid.uuid4()}",
-            system_message=system_message
-        ).with_model("gemini", "gemini-2.0-flash")
+            chat = LlmChat(
+                api_key=api_key,
+                session_id=f"resume_qa_{uuid.uuid4()}",
+                system_message=system_message
+            ).with_model("gemini", "gemini-2.0-flash")
 
-        # Prepare the message with resume context and question
-        user_message = UserMessage(
-            text=f"{resume_text}\n\nUser Question: {question}"
-        )
-
-        # Get AI response
-        response = await chat.send_message(user_message)
+            user_message = UserMessage(
+                text=f"{resume_text}\n\nUser Question: {question}"
+            )
+            response_text = await chat.send_message(user_message)
+            response_text = response_text.strip()
+            
+        elif USE_GOOGLE_AI:
+            # Use Google Generative AI (for local development)
+            api_key = os.environ.get('GOOGLE_API_KEY') or os.environ.get('GEMINI_API_KEY')
+            if not api_key:
+                raise HTTPException(status_code=500, detail="GOOGLE_API_KEY or GEMINI_API_KEY not configured for local development")
+                
+            genai.configure(api_key=api_key)
+            model = genai.GenerativeModel('gemini-1.5-flash')
+            
+            prompt = f"{system_message}\n\nResume Content:\n{resume_text}\n\nUser Question: {question}"
+            response = await model.generate_content_async(prompt)
+            response_text = response.text.strip()
+            
+        elif USE_OPENAI:
+            # Use OpenAI (for local development)
+            api_key = os.environ.get('OPENAI_API_KEY')
+            if not api_key:
+                raise HTTPException(status_code=500, detail="OPENAI_API_KEY not configured for local development")
+                
+            client = OpenAI(api_key=api_key)
+            response = await client.chat.completions.create(
+                model="gpt-4o-mini",
+                messages=[
+                    {"role": "system", "content": system_message},
+                    {"role": "user", "content": f"Resume Content:\n{resume_text}\n\nUser Question: {question}"}
+                ]
+            )
+            response_text = response.choices[0].message.content.strip()
+            
+        else:
+            # No AI integration available - return helpful static response
+            return ResumeQAResponse(
+                answer="AI integration not available. Please install 'google-generativeai' or 'openai' and set your API key.",
+                suggestions=[
+                    "For Google AI: pip install google-generativeai and set GOOGLE_API_KEY",
+                    "For OpenAI: pip install openai and set OPENAI_API_KEY",
+                    "Check your resume content manually for improvements"
+                ]
+            )
         
         # Parse the response to extract answer and suggestions
-        response_text = response.strip()
-        
-        # Try to split answer and suggestions
         answer = ""
         suggestions = []
         
