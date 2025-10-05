@@ -1,0 +1,33 @@
+# JobMate Local Development Requirements
+# Use this file for local development: pip install -r requirements-local.txt
+
+# Core FastAPI Dependencies
+fastapi==0.110.1
+uvicorn==0.25.0
+python-dotenv>=1.0.1
+pymongo==4.5.0
+pydantic>=2.6.4
+python-multipart>=0.0.9
+
+# Data Processing
+pandas>=2.2.0
+numpy>=1.26.0
+scipy>=1.11.0
+scikit-learn>=1.4.0
+
+# Resume Processing
+pdfplumber>=0.10.0
+docx2txt>=0.8
+nltk>=3.8.1
+
+# AI Integration (Choose one based on your preference)
+# Option 1: Google AI (Recommended - has free tier)
+google-generativeai>=0.3.0
+
+# Option 2: OpenAI (Uncomment if you prefer OpenAI)
+# openai>=1.0.0
+
+# Development Tools (Optional)
+pytest>=8.0.0
+black>=24.1.1
+isort>=5.13.2
